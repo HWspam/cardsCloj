@@ -19,33 +19,36 @@
           a4 (disj deck a1 a2 a3)]
       #{a1 a2 a3 a4})))
 
-;(defn flush? [hand]
- ; (= 1 (count (set (map :suit hand)))))
 
 (defn straightflush? [hand]
  (= 1 (count (set (map and :suit hand :rank deck)))))
 
 (defn straight? [hand]
- (= 1 (count (set (map :rank hand)))))
+  (let [rank (map :rank hand)
+        [a b c d] rank
+        so (sort [a b c d])
+        [w x y z] so]
+    (and (= w (- x 1) (- y 2) (- z 3))
+         (=1 (count (set (map :suit hand)))))))
+ 
 
 (defn fourofakind? [hand]
   (= 1 (count (set (map :rank hand)))))
 
 (defn threeofakind? [hand]
-  (thing [a b c d] hand) 
-  toak [=a b c
-        =a c d
-        =a b d
-        =b c d] thing)
+  (let [rank (map :rank hand)
+        [a b c d] rank]
+    (or (= a b c)
+        (= a c d)
+        (+ a b d)
+        (= b d c))))
 
 (defn two-pair [hand]
-  (thing2 [a b c d] hand)
-  tp [=a b
-      =a c
-      =a d
-      =b c
-      =b d
-      =c d] thing2)
+  (let [rank (map :rank hand)
+        [a b c d] rank]
+    (or (and (=a b ) (= c d))
+        (and (= a d) (c b))
+        (and (= a c) (= d b)))))
 
 (def test-hand 
   #{{:suit :clubs
@@ -63,5 +66,17 @@
 (defn -main []
   (let [deck (create-deck)
         hand (create-hand deck)
+        straightflush (filter straight-flush? hand)
+        straight (filter straight? hand)
+        flush (filter flush? hand)
+        fourofakind (filter fourofakind? hand)
+        threeofakind (filter threeofakind? hand)
+        two-pair (filter two-pair hand)
         x (filter fourofakind? hand)]
-    (println (count x))))
+    (println (count flush)
+      (count straightflush)
+      (count straight)
+      (count flush)
+      (count fourofakind)
+      (count threeofakind)
+      (count two-pair))))
