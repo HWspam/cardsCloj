@@ -20,8 +20,7 @@
       #{a1 a2 a3 a4})))
 
 
-(defn straightflush? [hand]
- (= 1 (count (set (map and :suit hand :rank deck)))))
+  
 
 (defn straight? [hand]
   (let [rank (map :rank hand)
@@ -29,8 +28,14 @@
         so (sort [a b c d])
         [w x y z] so]
     (and (= w (- x 1) (- y 2) (- z 3))
-         (=1 (count (set (map :suit hand)))))))
+         (= 1 (count (set (map :suit hand)))))))
+
+(defn flush? [hand]
+  (= 1 (count (set (map :suit hand)))))
  
+(defn straight-flush? [hand]
+  (and (flush? hand) (straight? hand)))
+
 
 (defn fourofakind? [hand]
   (= 1 (count (set (map :rank hand)))))
@@ -40,14 +45,14 @@
         [a b c d] rank]
     (or (= a b c)
         (= a c d)
-        (+ a b d)
+        (= a b d)
         (= b d c))))
 
 (defn two-pair [hand]
   (let [rank (map :rank hand)
         [a b c d] rank]
-    (or (and (=a b ) (= c d))
-        (and (= a d) (c b))
+    (or (and (= a b ) (= c d))
+        (and (= a d) (= c b))
         (and (= a c) (= d b)))))
 
 (def test-hand 
@@ -61,7 +66,7 @@
      :rank 10}})
 
 (defn tests []
-  (straightflush? test-hand))
+  (straight-flush? test-hand))
 
 (defn -main []
   (let [deck (create-deck)
